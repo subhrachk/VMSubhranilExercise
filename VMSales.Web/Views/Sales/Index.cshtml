@@ -1,0 +1,99 @@
+﻿@model SalesViewModel
+
+@{
+    Pagination pager = new Pagination();
+
+    int pageNumber = 0;
+
+    if (Model.pager != null)
+    {
+        pager = Model.pager;
+        pageNumber = pager.CurrentPage;
+    }
+}
+
+<div class="container pb-2 border-1">
+    <div class="row pt-2">
+        <h1 class="text-primary">Sales Index</h1>
+        <h2 class="text-right">Select Order Column</h2>
+        <form asp-controller="Sales" asp-action="Index" method="post">
+            <select class="col-md-3" asp-for="SalesColumnOrder" asp-items="Model.SalesColumnOrderSelectList"></select>
+            <button type="submit" class="btn btn-primary col-md-3 m-2 text-center">Reload Data</button>
+        </form>
+    </div>
+    <table class="table table-striped">
+        <thead>
+            <tr class="text-center">
+                <th>Segment</th>
+                <th>Country</th>
+                <th>Product</th>
+                <th>Discount Band</th>
+                <th>Unit Sold</th>
+                <th>Manufacturing <br/> Price</th>
+                <th>Sales Price</th>
+                <th>Sales Date <br/> (DD/MM/YYYY)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var sales in Model.SalesView)
+            {
+                <tr>
+                    <td class="text-center">@sales.SegmentName</td>
+                    <td class="text-center">@sales.CountryName</td>
+                    <td class="text-center">@sales.ProductName</td>
+                    <td class="text-center">@sales.DiscountBand</td>
+                    <td class="text-center">@sales.UnitsSold.ToString("c")</td>
+                    <td class="text-center">@sales.ManufacturingPrice.ToString("c")</td>
+                    <td class="text-center">@sales.SalePrice.ToString("c")</td>
+                    <td class="text-center">@sales.SaleDate.ToString("dd/MM/yyyy")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <div class="container">
+        @if(pager.TotalPages > 0)
+        {
+
+
+            
+            <ul class="pagination justify-content-end">
+
+                @if (pager.CurrentPage > 1)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-controller="Sales" asp-action="Index" asp-route-page="@(1)" asp-route-columnOrder="@Model.SalesColumnOrder">First</a>
+                    </li>
+                }
+                @if (pager.CurrentPage > 2)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-controller="Sales" asp-action="Index" asp-route-page="@(pager.CurrentPage - 1)" asp-route-columnOrder="@Model.SalesColumnOrder">Previous</a>
+                    </li>
+                }
+
+                @for(var pge = pager.StartPage; pge <= pager.EndPage; pge++)
+                {
+                    <li class="page-item @(pge == pager.CurrentPage? "active": "")">
+                        <a class="page-link" asp-controller="Sales" asp-action="Index" asp-route-page="@pge" asp-route-columnOrder="@Model.SalesColumnOrder">@pge</a>
+                    </li>
+                }
+
+                @if (pager.CurrentPage < pager.TotalPages-1)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-controller="Sales" asp-action="Index" asp-route-page="@(pager.CurrentPage + 1)" asp-route-columnOrder="@Model.SalesColumnOrder">Next</a>
+                    </li>
+                }
+
+                @if (pager.CurrentPage < pager.TotalPages)
+                {
+                    <li class="page-item">
+                        <a class="page-link" asp-controller="Sales" asp-action="Index" asp-route-page="@(pager.TotalPages)" asp-route-columnOrder="@Model.SalesColumnOrder">last</a>
+                    </li>
+                }
+
+            </ul>
+        }
+    </div>
+</div>
